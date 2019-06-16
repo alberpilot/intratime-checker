@@ -32,7 +32,9 @@ clock_in_out() {
     if [ "$(echo $TOKEN)" == "null" ]; then
         echo "Token operation failed"
     else
-        CLOCK_ACTION=$(curl -s --location --request POST "$API_URL""$API_CLOCKING_PATH" --header "$API_APPLICATION_HEADER" --header "token: ${TOKEN}" --form "user_action=${ACTION}" --form "user_timestamp=$DATE$TIME" --form "user_use_server_time=false" | jq ".INOUT_CREATETIME" -r  )
+        USE_SYSTEM_TIME=false
+        [ $TIME ] || USE_SYSTEM_TIME=true
+        CLOCK_ACTION=$(curl -s --location --request POST "$API_URL""$API_CLOCKING_PATH" --header "$API_APPLICATION_HEADER" --header "token: ${TOKEN}" --form "user_action=${ACTION}" --form "user_timestamp=$DATE$TIME" --form "user_use_server_time=$USE_SYSTEM_TIME" | jq ".INOUT_CREATETIME" -r  )
         if [ "$(echo $CLOCK_ACTION)" == "null" ]
         then
             echo "Something went wrong"
@@ -99,9 +101,10 @@ main() {
                 ;;
                 "-t"|"--time")
                     if [ -n "$2" ]; then
-                        TIME="$2:00"
-                        if [[ "`date '+%H:%M:%S' -d $TIME 2>/dev/null`" = "$TIME" ]]
+                        TIME="$2"
+                        if [[ "`date '+%H:%M' -d $TIME 2>/dev/null`" = "$TIME" ]]
                         then
+                            TIME="$2:00"
                             echo "Using $TIME as time"
                         else
                             echo "Time $TIME is in an invalid format (not HH:MM)"
