@@ -1,21 +1,32 @@
-# intratime-checker
+# Intratime checker
+
 Simple script for check-in/out using Intratime API
 
-This script facilitate the check-in/out operation using the Intratime API. It could be used with cronjobs. 
+_Tip: you may want to use in combination with cronjobs._
 
-How to use it: 
+#### How to use it
+
 ```
 Usage: ./intratime_checker.sh [OPTIONS]
 
     -u, --user        [Required] Intratime user
     -p, --password    [Required] Intratime password
     -a, --action      [Required] Clock in/out action: 0 = Check in; 1 = Check out; 3 = Pause; 4 = Return
+    -d, --date        [Optional] Clock in/out date. E.g: 2019-06-16"
+    -t, --time        [Optional] Clock in/out time. E.g: 09:00"
     -h, --help        Show this help.
 ```
 
-NOTE: Please review if you have installed `jq`
+**Example**
 
-Example: 
 ```
-./intratime_checker.sh -u user@email.com -p 1234 -a 0
+./intratime_checker.sh -u user@email.com -p 1234 -a 0 -d 2019-06-16 -t 09:00
 ```
+
+#### Contributing
+
+Fork this repository, then make a pull request. The team will review it as soon as possible.
+
+#### I don't like bash, what to do?
+
+It would be nice to receive ports for other languages, feel free to make your own port.
