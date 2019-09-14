@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "INTRATIME CHECKER v0.0.1"
+echo "Intratime checker v0.0.2"
 
 command -v jq >/dev/null 2>&1 || { echo >&2 "Software jq is required but it's not installed. Please, install it before using this script."; exit 1; }
 
@@ -10,7 +10,7 @@ API_APPLICATION_HEADER="Accept: application/vnd.apiintratime.v1+json"
 API_CONTENT_HEADER="Content-Type: application/x-www-form-urlencoded; charset:utf8"
 
 help() {
-    
+
     echo
     echo "Usage: $0 [OPTIONS]"
     echo
@@ -22,31 +22,62 @@ help() {
     echo "    -h, --help        Show this help."
     echo
     exit $1
-    
+
+}
+
+check_if_free_day(){
+
+    # Function with 2 return. Bad idea, I know.
+    input="days_off.txt"
+    while IFS= read -r line
+    do
+        if [[ $1 = "$line" ]]
+        then
+            return 0
+        fi
+    done < "$input"
+    return 1
+
+}
+
+check_if_weekend(){
+
+    if [[ $(date -d $1 +%u) -gt 5 ]] ; then
+        # Weekend
+        return 0
+    else
+        return 1
+    fi
+
 }
 
 clock_in_out() {
-    
-    TOKEN=$(curl -s --location --request POST "$API_URL""$API_LOGIN_PATH" --header "$API_APPLICATION_HEADER" --header "$API_CONTENT_HEADER" --data "user=${USER}&pin=${PASSWORD}" | jq ".USER_TOKEN" -r )
-    echo $DATE $TIME
-    if [ "$(echo $TOKEN)" == "null" ]; then
-        echo "Token operation failed"
-    else
-        USE_SYSTEM_TIME=false
-        [ $TIME ] || USE_SYSTEM_TIME=true
-        CLOCK_ACTION=$(curl -s --location --request POST "$API_URL""$API_CLOCKING_PATH" --header "$API_APPLICATION_HEADER" --header "token: ${TOKEN}" --form "user_action=${ACTION}" --form "user_timestamp=$DATE$TIME" --form "user_use_server_time=$USE_SYSTEM_TIME" | jq ".INOUT_CREATETIME" -r  )
-        if [ "$(echo $CLOCK_ACTION)" == "null" ]
-        then
-            echo "Something went wrong"
+
+    # I will not check if weekend because I will setup crontab for not checking in on weekend
+    if  ! check_if_free_day $1
+    then
+        TOKEN=$(curl -s --location --request POST "$API_URL""$API_LOGIN_PATH" --header "$API_APPLICATION_HEADER" --header "$API_CONTENT_HEADER" --data "user=${USER}&pin=${PASSWORD}" | jq ".USER_TOKEN" -r )
+        echo $DATE $TIME
+        if [ "$(echo $TOKEN)" == "null" ]; then
+            echo "Token operation failed"
         else
-            echo "Register created"
+            USE_SYSTEM_TIME=false
+            [ $TIME ] || USE_SYSTEM_TIME=true
+            CLOCK_ACTION=$(curl -s --location --request POST "$API_URL""$API_CLOCKING_PATH" --header "$API_APPLICATION_HEADER" --header "token: ${TOKEN}" --form "user_action=${ACTION}" --form "user_timestamp=$DATE$TIME" --form "user_use_server_time=$USE_SYSTEM_TIME" | jq ".INOUT_CREATETIME" -r  )
+            if [ "$(echo $CLOCK_ACTION)" == "null" ]
+            then
+                echo "Something went wrong"
+            else
+                echo "Register created"
+            fi
         fi
+    else
+        echo "Free day today"
     fi
-    
 }
 
 main() {
-    
+
     if [ -n "$1" ]
     then
         # Reading command line arguments
