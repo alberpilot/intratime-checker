@@ -133,9 +133,9 @@ main() {
                 "-t"|"--time")
                     if [ -n "$2" ]; then
                         TIME="$2"
-                        if [[ "`date '+%H:%M' -d $TIME 2>/dev/null`" = "$TIME" ]]
+                        if [[ "`date '+%H:%M:%S' -d $TIME 2>/dev/null`" = "$TIME" ]]
                         then
-                            TIME="$2:00"
+                            TIME="$2"
                             echo "Using $TIME as time"
                         else
                             echo "Time $TIME is in an invalid format (not HH:MM)"
