@@ -20,7 +20,7 @@ Usage: ./intratime_checker.sh [OPTIONS]
 **Example**
 
 ```
-./intratime_checker.sh -u user@email.com -p 1234 -a 0 -d 2019-06-16 -t 09:00
+./intratime_checker.sh -u user@email.com -p 1234 -a 0 -d 2019-06-16 -t 09:00:00
 ```
 
 #### Contributing
