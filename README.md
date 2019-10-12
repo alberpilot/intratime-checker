@@ -11,9 +11,9 @@ Usage: ./intratime_checker.sh [OPTIONS]
 
     -u, --user        [Required] Intratime user
     -p, --password    [Required] Intratime password
-    -a, --action      [Required] Clock in/out action: 0 = Check in; 1 = Check out; 3 = Pause; 4 = Return
+    -a, --action      [Required] Clock in/out action: 0 = Check in; 1 = Check out; 2 = Pause; 3 = Return
     -d, --date        [Optional] Clock in/out date. E.g: 2019-06-16"
-    -t, --time        [Optional] Clock in/out time. E.g: 09:00"
+    -t, --time        [Optional] Clock in/out time. E.g: 09:00:00"
     -h, --help        Show this help.
 ```
 

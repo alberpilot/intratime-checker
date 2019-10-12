@@ -16,9 +16,9 @@ help() {
     echo
     echo "    -u, --user        [Required] Intratime user"
     echo "    -p, --password    [Required] Intratime password"
-    echo "    -a, --action      [Required] Clock in/out action: 0 = Check in; 1 = Check out; 3 = Pause; 4 = Return"
+    echo "    -a, --action      [Required] Clock in/out action: 0 = Check in; 1 = Check out; 2 = Pause; 3 = Return"
     echo "    -d, --date        [Optional] Clock in/out date. E.g: 2019-06-16"
-    echo "    -t, --time        [Optional] Clock in/out time. E.g: 09:00"
+    echo "    -t, --time        [Optional] Clock in/out time. E.g: 09:00:00"
     echo "    -h, --help        Show this help."
     echo
     exit $1
