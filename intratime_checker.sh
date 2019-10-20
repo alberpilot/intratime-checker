@@ -138,7 +138,7 @@ main() {
                             TIME="$2"
                             echo "Using $TIME as time"
                         else
-                            echo "Time $TIME is in an invalid format (not HH:MM)"
+                            echo "Time $TIME is in an invalid format (not HH:MM:SS)"
                             exit 1
                         fi
                         shift 2
