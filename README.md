@@ -1,10 +1,22 @@
 # Intratime checker
 
+![Status](https://img.shields.io/badge/Status-running-green.svg)
+![Status](https://img.shields.io/badge/Language-python-yellow.svg)
+![Status](https://img.shields.io/badge/Language-bash-brown.svg)
+
+<p align="center">
+<img src="https://www.intratime.es/wp-content/uploads/2018/06/logo-intratime-control-horario.png">
+</p>
+
 Simple script for check-in/out using Intratime API
 
-_Tip: you may want to use in combination with cronjobs._
+There are two scripts available to use written in `bash` and `python`.
 
-#### How to use it
+> Tip: you may want to use in combination with cronjobs.
+
+### How to use it
+
+#### BASH SCRIPT
 
 ```
 Usage: ./intratime_checker.sh [OPTIONS]
@@ -23,10 +35,29 @@ Usage: ./intratime_checker.sh [OPTIONS]
 ./intratime_checker.sh -u user@email.com -p 1234 -a 0 -d 2019-06-16 -t 09:00:00
 ```
 
-#### Contributing
+#### PYTHON SCRIPT
+
+```
+Usage: python intratime-checker.py [OPTIONS]
+
+    -u, --user        [Required] Intratime user
+    -p, --password    [Required] Intratime password
+    -a, --action      [Required] Action: [in,out,pause,return]
+    -d, --date        [Optional] Clock in/out date. E.g: 2019-06-16"
+    -t, --time        [Optional] Clock in/out time. E.g: 09:00:00"
+    -h, --help        Show this help.
+```
+**Example**
+
+```
+python intratime-checker.py -u user@gmail.com -p 81 -a out -d 2019-10-18 -t 17:34:22
+```
+---
+
+### Contributing
 
 Fork this repository, then make a pull request. The team will review it as soon as possible.
 
-#### I don't like bash, what to do?
+### I don't like bash, what to do?
 
 It would be nice to receive ports for other languages, feel free to make your own port.
