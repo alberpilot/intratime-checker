@@ -3,7 +3,7 @@
 #  @jmv74211
 #  @okynos
 #  License: GNU General Public License v3.0
-#  Versión 1.0
+#  Version 1.0
 
 import argparse
 import requests
@@ -28,31 +28,6 @@ API_HEADER = {
 
 #-------------------------------------------------------------------------------
 # AUXILIARY FUNCTIONS
-#-------------------------------------------------------------------------------
-
-"""
-    Function to store all arguments entered by the user in a dictionary
-
-    Parameters:
-        - args(argsparse): User arguments
-
-    Return
-        (Dictionary): User arguments
-"""
-
-def set_parameters(args):
-
-    parameters = {}
-    parameters['user'] = args.user
-    parameters['password'] = args.password
-    parameters['action'] = args.action
-
-    # These parameters can be None
-    parameters['date'] = args.date
-    parameters['time'] = args.time
-
-    return parameters
-
 #-------------------------------------------------------------------------------
 
 """
@@ -225,12 +200,13 @@ if __name__ == "__main__":
       metavar='<str>', help="Intratime login password.")
     ap.add_argument("-a", "--action", type=str, required=True,
       metavar='<str>', choices=['in','out','pause','return'],
-      help="Action to run against intratime API.")
-    ap.add_argument("-d", "--date", type=str, help="Format YYYY-mm-dd")
-    ap.add_argument("-t", "--time", type=str, help="Format: hh:mm:ss")
+      help="Action to insert, choices are: in, out, pause, return.")
+    ap.add_argument("-d", "--date", type=str, required=False,
+      metavar='<str>', help="Date to use in action format: YYYY-mm-dd")
+    ap.add_argument("-t", "--time", type=str, required=False,
+      metavar='<str>', help="Time to use in action format: hh:mm:ss")
     args = ap.parse_args()
 
-    parameters = set_parameters(args)
-    check_date_time_format(parameters['date'], parameters['time'])
-    token = get_login_token(parameters['user'], parameters['password'])
-    clocking(parameters['action'], token, parameters['date'], parameters['time'])
+    check_date_time_format(args.date, args.time)
+    token = get_login_token(args.user, args.password)
+    clocking(args.action, token, args.date, args.time)
