@@ -1,7 +1,7 @@
-
 #  Intratime-checker
 #  -----------------
 #  @jmv74211
+#  @okynos
 #  License: GNU General Public License v3.0
 #  Versión 1.0
 
@@ -12,9 +12,9 @@ import sys
 import random
 from datetime import datetime
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # GLOBAL VARS
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 API_URL = "http://newapi.intratime.es"
 API_LOGIN_PATH =  "/api/user/login"
@@ -22,20 +22,20 @@ API_CLOCKING_PATH = "/api/user/clocking"
 API_APPLICATION_HEADER = "Accept: application/vnd.apiintratime.v1+json"
 API_HEADER = {
                 "Accept": "application/vnd.apiintratime.v1+json",
-                "Content-Type": "application/x-www-form-urlencoded", 
+                "Content-Type": "application/x-www-form-urlencoded",
                 "charset":"utf8"
              }
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # AUXILIARY FUNCTIONS
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to store all arguments entered by the user in a dictionary
 
     Parameters:
         - args(argsparse): User arguments
-    
+
     Return
         (Dictionary): User arguments
 """
@@ -53,7 +53,7 @@ def set_parameters(args):
 
     return parameters
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to check the date and time format. Can be:
@@ -82,14 +82,14 @@ def check_date_time_format(date, time):
             print("Incorrect time format, should be HH:MM:SS")
             sys.exit(1)
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to transform an action into its respective code
 
     Parameters:
         - action: example --> ['in, out, pause, return]
-    
+
     Return
         (int): API action code
 """
@@ -102,18 +102,18 @@ def get_action(action):
         "pause": 2,
         "return": 3,
     }
-  
+
     try:
         return switcher[action]
     except:
         print("ERROR: Invalid action. Choose from 'in', 'out', 'pause', 'return' ")
         sys.exit(1)
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to get the current date and time
-    
+
     Return
         (String): example --> 2019-10-10 20:00:05
 """
@@ -122,14 +122,14 @@ def get_current_date_time():
 
     now = datetime.now()
     date_time = "{0} {1}".format(now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S"))
- 
+
     return date_time
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to obtain random coordinates around the Wazuh office (Av. del Desarrollo, 22-26, 18100)
-    
+
     Return
         (Tuple-Float): example --> (37.1472542, -36086542)
 """
@@ -141,12 +141,12 @@ def get_random_coordinates():
 
     wazuh_location_w = float("37.147{0}".format(w))
     wazuh_location_n = float("-3.608{0}".format(n))
-    
+
     return wazuh_location_w, wazuh_location_n
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # MAIN FUNCTIONS
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to identify yourself in the API and obtain the authentication token
@@ -155,29 +155,29 @@ def get_random_coordinates():
         - username(String): example --> user@gmail.com
         - password(String): example --> 91
 
-    Return 
+    Return
         (String): Authentication token
 """
 
 def get_login_token(username, password):
 
-    login_api_url = "{0}{1}".format(API_URL, API_LOGIN_PATH)    
+    login_api_url = "{0}{1}".format(API_URL, API_LOGIN_PATH)
     payload="user={0}&pin={1}".format(username, password)
-    
+
     try:
         request = requests.post(login_api_url, data=payload, headers=API_HEADER)
         token = json.loads(request.text)['USER_TOKEN']
     except:
         print("ERROR: Invalid username or password")
         sys.exit(1)
-    
+
     return token
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to register an entry, exit, pause or return with a specific date and time
-    
+
     Parameters:
         - action(String): example --> ['in, out, pause, return]
         - token(String): Authentication token
@@ -197,7 +197,7 @@ def clocking(action, token, date=None, time=None):
     wazuh_location_w, wazuh_location_n = get_random_coordinates()
 
     api_action = get_action(action) # in --> 0, out --> 1, pause --> 3, return --> 4
-    clocking_api_url = "{0}{1}".format(API_URL, API_CLOCKING_PATH)    
+    clocking_api_url = "{0}{1}".format(API_URL, API_CLOCKING_PATH)
     API_HEADER.update({ "token": token })
 
     payload = "user_action={0}&user_use_server_time={1}&user_timestamp={2}&user_gps_coordinates={3},{4}" \
@@ -209,29 +209,28 @@ def clocking(action, token, date=None, time=None):
                 .format(action, date_time, wazuh_location_w, wazuh_location_n))
         else:
             print("ERROR: Registration failed, please try again")
-            sys.exit(1) 
+            sys.exit(1)
     except:
         raise
         print("ERROR: The request could not be sent to intratime API. Status code = {0}".format(request.status_code))
         sys.exit(1)
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("-u", "--user", type=str, required=True,
+      metavar='<str>', help="Intratime username.")
+    ap.add_argument("-p", "--password", type=str, required=True,
+      metavar='<str>', help="Intratime login password.")
+    ap.add_argument("-a", "--action", type=str, required=True,
+      metavar='<str>', choices=['in','out','pause','return'],
+      help="Action to run against intratime API.")
+    ap.add_argument("-d", "--date", type=str, help="Format YYYY-mm-dd")
+    ap.add_argument("-t", "--time", type=str, help="Format: hh:mm:ss")
+    args = ap.parse_args()
 
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("-u", "--user", type=str, required=True, help="Intratime username.")
-    arg_parser.add_argument("-p", "--password", type=str, required=True, help="Intratime user password")
-    arg_parser.add_argument("-a", "--action", type=str, required=True,  choices=['in','out','pause','return'], 
-                            help="Action")
-    arg_parser.add_argument("-d", "--date", type=str, help="Format YYYY-mm-dd")
-    arg_parser.add_argument("-t", "--time", type=str, help="Format: hh:mm:ss")
-    args = arg_parser.parse_args()
-    
     parameters = set_parameters(args)
-
     check_date_time_format(parameters['date'], parameters['time'])
-
     token = get_login_token(parameters['user'], parameters['password'])
-
     clocking(parameters['action'], token, parameters['date'], parameters['time'])
