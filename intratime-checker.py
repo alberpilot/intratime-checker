@@ -200,7 +200,7 @@ if __name__ == "__main__":
       metavar='<str>', help="Intratime login password.")
     ap.add_argument("-a", "--action", type=str, required=True,
       metavar='<str>', choices=['in','out','pause','return'],
-      help="Action to run against intratime API.")
+      help="Action to insert, choices are: in, out, pause, return.")
     ap.add_argument("-d", "--date", type=str, required=False,
       metavar='<str>', help="Date to use in action format: YYYY-mm-dd")
     ap.add_argument("-t", "--time", type=str, required=False,
