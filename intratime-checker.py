@@ -3,7 +3,7 @@
 #  @jmv74211
 #  @okynos
 #  License: GNU General Public License v3.0
-#  Versión 1.0
+#  Version 1.0
 
 import argparse
 import requests
