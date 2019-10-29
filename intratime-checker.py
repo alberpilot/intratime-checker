@@ -1,7 +1,7 @@
-
 #  Intratime-checker
 #  -----------------
 #  @jmv74211
+#  @okynos
 #  License: GNU General Public License v3.0
 #  Versión 1.1
 
@@ -13,9 +13,9 @@ import random
 import yaml # PyYAML version 5.1 or greeter due to CVE
 from datetime import datetime
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # GLOBAL VARS
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 CONFIG_FILE = "config.yaml"
 API_URL = "http://newapi.intratime.es"
@@ -24,11 +24,11 @@ API_CLOCKING_PATH = "/api/user/clocking"
 API_APPLICATION_HEADER = "Accept: application/vnd.apiintratime.v1+json"
 API_HEADER = {
                 "Accept": "application/vnd.apiintratime.v1+json",
-                "Content-Type": "application/x-www-form-urlencoded", 
+                "Content-Type": "application/x-www-form-urlencoded",
                 "charset":"utf8"
              }
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # AUXILIARY FUNCTIONS
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -119,7 +119,7 @@ def check_date_time_format(date, time):
     if failed:
         sys.exit(1)
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to transform an action into its respective code
@@ -139,18 +139,18 @@ def get_action(action):
         "pause": 2,
         "return": 3,
     }
-  
+
     try:
         return switcher[action]
     except:
         print_error("Invalid action. Choose from 'in', 'out', 'pause', 'return' ")
         sys.exit(1)
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to get the current date and time
-    
+
     Return
         (String): example --> 2019-10-10 20:00:05
 """
@@ -159,14 +159,14 @@ def get_current_date_time():
 
     now = datetime.now()
     date_time = "{0} {1}".format(now.strftime("%Y-%m-%d"), now.strftime("%H:%M:%S"))
- 
+
     return date_time
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to obtain random coordinates around the Wazuh office (Av. del Desarrollo, 22-26, 18100)
-    
+
     Return
         (Tuple-Float): example --> (37.1472542, -36086542)
 """
@@ -178,7 +178,7 @@ def get_random_coordinates():
 
     wazuh_location_w = float("37.147{0}".format(w))
     wazuh_location_n = float("-3.608{0}".format(n))
-    
+
     return wazuh_location_w, wazuh_location_n
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ def check_parameters_interactive(parameters):
 
 # ---------------------------------------------------------------------------------------------------------------------
 # MAIN FUNCTIONS
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to identify yourself in the API and obtain the authentication token
@@ -258,29 +258,29 @@ def check_parameters_interactive(parameters):
         - username(String): example --> user@gmail.com
         - password(String): example --> 91
 
-    Return 
+    Return
         (String): Authentication token
 """
 
 def get_login_token(username, password):
 
-    login_api_url = "{0}{1}".format(API_URL, API_LOGIN_PATH)    
+    login_api_url = "{0}{1}".format(API_URL, API_LOGIN_PATH)
     payload="user={0}&pin={1}".format(username, password)
-    
+
     try:
         request = requests.post(login_api_url, data=payload, headers=API_HEADER)
         token = json.loads(request.text)['USER_TOKEN']
     except:
         print_error("Invalid username or password")
         sys.exit(1)
-    
+
     return token
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 """
     Function to register an entry, exit, pause or return with a specific date and time
-    
+
     Parameters:
         - action(String): example --> ['in, out, pause, return]
         - token(String): Authentication token
@@ -300,7 +300,7 @@ def clocking(action, token, date=None, time=None):
     wazuh_location_w, wazuh_location_n = get_random_coordinates()
 
     api_action = get_action(action) # in --> 0, out --> 1, pause --> 3, return --> 4
-    clocking_api_url = "{0}{1}".format(API_URL, API_CLOCKING_PATH)    
+    clocking_api_url = "{0}{1}".format(API_URL, API_CLOCKING_PATH)
     API_HEADER.update({ "token": token })
 
     payload = "user_action={0}&user_use_server_time={1}&user_timestamp={2}&user_gps_coordinates={3},{4}" \
@@ -317,7 +317,7 @@ def clocking(action, token, date=None, time=None):
         print_error("The request could not be sent to intratime API. Status code = {0}".format(request.status_code))
         raise
 
-# ---------------------------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
